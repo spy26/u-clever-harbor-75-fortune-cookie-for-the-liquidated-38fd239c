@@ -18,6 +18,14 @@ FORTUNE = (
 
 
 def main() -> None:
+    # Guard the gate before writing: fail loudly instead of shipping an
+    # invalid entry (1-160 chars, one line, at most 20 words).
+    if not 1 <= len(FORTUNE) <= 160:
+        raise ValueError(f"fortune must be 1-160 chars, got {len(FORTUNE)}")
+    if "\n" in FORTUNE or "\r" in FORTUNE:
+        raise ValueError("fortune must be a single line")
+    if len(FORTUNE.split()) > 20:
+        raise ValueError("fortune must be at most 20 words")
     output_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
     output_dir.mkdir(parents=True, exist_ok=True)
     # No trailing newline: entry.txt holds exactly the fortune bytes.
